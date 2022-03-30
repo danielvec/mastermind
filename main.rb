@@ -28,4 +28,26 @@ class Game
   end
 end
 
-Game.new
+class Player
+  attr_accessor :choice
+  def initialize
+    p player_selection
+  end
+
+  def choice(number)
+    puts "choose a color for space #{number} (red, green, blue, 
+    orange, yellow, black, white, brown)"
+    choice = gets.chomp
+    return choice if COLORS.include? choice
+
+    puts 'not a valid color'
+    choice(number)
+  end
+
+  def player_selection
+    player_selection = []
+    4.times {|i| player_selection << choice(i+1)}
+    player_selection
+  end
+end
+Player.new
