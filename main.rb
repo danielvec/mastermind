@@ -19,6 +19,10 @@ class Game
   def initialize
     winning_colors = comp_selection
     display_board
+    user = Player.new
+    while user.turns > 0
+      user.player_selection
+    end
   end
 
   def comp_selection
@@ -29,9 +33,11 @@ class Game
 end
 
 class Player
-  attr_accessor :choice
+  include DisplayBoard
+
+  attr_accessor :turns
   def initialize
-    p player_selection
+    @turns = 12
   end
 
   def choice(number)
@@ -47,7 +53,10 @@ class Player
   def player_selection
     player_selection = []
     4.times {|i| player_selection << choice(i+1)}
-    player_selection
+    BOARD[@turns - 1] = player_selection
+    display_board
+    @turns -= 1
+    puts @turns
   end
 end
-Player.new
+Game.new
