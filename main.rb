@@ -20,10 +20,15 @@ class Game
   def initialize
     winning_colors = comp_selection
     display_board
-    @user = Player.new
-    while @user.turns > 0
-      @user.player_selection
-      check(BOARD[@user.turns],winning_colors)
+    #@user = Player.new
+    @comp = Computer.new
+    #while @user.turns > 0
+      #@user.player_selection
+      #check(BOARD[@user.turns],winning_colors)
+    #end
+    while @comp.turns > 0
+      @comp.comp_selection
+      check(BOARD[@comp.turns],winning_colors)
     end
     puts "You lose. Winning colors are #{winning_colors}"
   end
@@ -42,7 +47,8 @@ class Game
     @play = @player.dup
     match
     exist
-    BOARD[@user.turns].append(@hints)
+    #BOARD[@user.turns].append(@hints)
+    BOARD[@comp.turns].append(@hints)
     display_board
     puts @hints
     win
@@ -102,5 +108,33 @@ class Player
     puts @turns
   end
 end
+
+class Computer
+  include DisplayBoard
+
+  attr_accessor :turns
+  def initialize
+    @turns = 12
+  end
+  
+  def comp_selection
+    if @turns == 12
+      comp_selection = []
+      4.times {comp_selection << COLORS[7]}
+    elsif BOARD[@turns][4].length < 4
+      comp_selection = BOARD[@turns].dup
+      comp_selection.pop(5-BOARD[@turns][4].length)
+      p BOARD[@turns]
+      (4-BOARD[@turns][4].length).times {comp_selection << COLORS[@turns-6]}
+    else
+      last_move = BOARD[@turns].dup
+      last_move.pop
+      comp_selection = last_move.shuffle
+    end
+    p @turns
+    BOARD[@turns - 1] = comp_selection
+    @turns -= 1
+  end
+end  
 
 Game.new
