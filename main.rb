@@ -13,24 +13,37 @@ module DisplayBoard
   end
 end
 
+class Choice
+  def initialize
+    puts 'Enter "C" to be a creator or "G" to be a guesser'
+    choice = gets.chomp
+    if choice.upcase  == "C"
+      user = Player.new
+      winning_colors = []
+      4.times {|i| winning_colors << user.choice(i+1)}
+      guesser = Computer.new
+    elsif choice.upcase == "G"
+      guesser = Player.new
+      winning_colors = []
+      4.times {winning_colors << COLORS.sample}
+    end
+    Game.new(guesser, winning_colors)
+  end
+end
+
 class Game
   include DisplayBoard
-  attr_reader :user, :winning_colors, :computer, :player, :hints, :check, :play
+  attr_reader :user, :winning_colors, :computer, :player, :hints, :check, :play, :guesser
 
-  def initialize
-    winning_colors = comp_selection
+  def initialize(guesser, winning_colors)
+    @guesser = guesser
+    @winning_colors = winning_colors
     display_board
-    #@user = Player.new
-    @comp = Computer.new
-    #while @user.turns > 0
-      #@user.player_selection
-      #check(BOARD[@user.turns],winning_colors)
-    #end
-    while @comp.turns > 0
-      @comp.comp_selection
-      check(BOARD[@comp.turns],winning_colors)
+    while @guesser.turns > 0
+      @guesser.selection
+      check(BOARD[@guesser.turns],@winning_colors)
     end
-    puts "You lose. Winning colors are #{winning_colors}"
+    puts "Game over! Loser is #{@guesser.class}. Winning colors are #{@winning_colors}"
   end
 
   def comp_selection
@@ -47,8 +60,7 @@ class Game
     @play = @player.dup
     match
     exist
-    #BOARD[@user.turns].append(@hints)
-    BOARD[@comp.turns].append(@hints)
+    BOARD[@guesser.turns].append(@hints)
     display_board
     puts @hints
     win
@@ -76,7 +88,7 @@ class Game
 
   def win
     if @player[4] == "gggg"
-      puts "you win"
+      puts "Game over! Winner is #{@guesser.class}!"
       exit
     end
   end
@@ -100,7 +112,7 @@ class Player
     choice(number)
   end
 
-  def player_selection
+  def selection
     player_selection = []
     4.times {|i| player_selection << choice(i+1)}
     BOARD[@turns - 1] = player_selection
@@ -117,7 +129,7 @@ class Computer
     @turns = 12
   end
   
-  def comp_selection
+  def selection
     if @turns == 12
       comp_selection = []
       4.times {comp_selection << COLORS[7]}
@@ -137,4 +149,4 @@ class Computer
   end
 end  
 
-Game.new
+Choice.new
